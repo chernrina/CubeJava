@@ -6,7 +6,7 @@ class Cube {
 
     final int size;
 
-    private Character[][][] value;
+    private Character[][][] value; //Хранит значение граней
 
     private HashMap<Character, Integer> faces = new HashMap<>();
 
@@ -27,7 +27,7 @@ class Cube {
         }
     }
 
-    private void turn(char name, int direction) {
+    private void turn(char name, int direction) { //Поворачивает грань против(direction == 0) и по(direction == 1) часовой стрелки грань name
         if (!(Arrays.asList(facesName).contains(name))) throw new IllegalArgumentException();
         Character[][] rotate = new Character[size][size];
         switch (direction) {
@@ -50,18 +50,18 @@ class Cube {
         }
     }
 
-    void rotateCube(int direction) {
+    void rotateCube(int direction) { //Поворачивает кубик
         Character[] names;
         switch (direction) {
-            case 0: {
+            case 0: { //Вправо
                 names = new Character[]{'F', 'R', 'B', 'L', 'U', 'D'};
                 break;
             }
-            case 1: {
+            case 1: { //Влево
                 names = new Character[]{'L', 'B', 'R', 'F', 'D', 'U'};
                 break;
             }
-            case 2: {
+            case 2: { //Вверх
                 names = new Character[]{'F', 'U', 'B', 'D', 'L', 'R'};
                 this.turn('U', 0);
                 this.turn('U', 0);
@@ -69,7 +69,7 @@ class Cube {
                 this.turn('B', 0);
                 break;
             }
-            case 3: {
+            case 3: { //Вниз
                 names = new Character[]{'D', 'B', 'U', 'F', 'R', 'L'};
                 this.turn('D', 0);
                 this.turn('D', 0);
@@ -77,28 +77,31 @@ class Cube {
                 this.turn('B', 0);
                 break;
             }
-            case 4: {
+            case 4: { //Против часовой
                 names = new Character[]{'L', 'D', 'R', 'U', 'F', 'B'};
                 for (int i = 0; i < 4; i++) this.turn(names[i], 0);
                 break;
             }
-            case 5: {
+            case 5: { //По часовой
                 names = new Character[]{'U', 'R', 'D', 'L', 'B', 'F'};
                 for (int i = 0; i < 4; i++) this.turn(names[i], 1);
                 break;
             }
             default: throw new IllegalArgumentException();
         }
-        //ПЕРЕИМЕНОВКА 4 ГРАНЕЙ
+        //Переименовка 4 граней
         int temp = faces.get(names[3]);
         for (int i = 3; i > 0; i--) faces.put(names[i], faces.get(names[i - 1]));
         faces.put(names[0], temp);
-        //ПОВОРОТ 2 ГРАНЕЙ НА 90 ГРАДУСОВ
+        //Поворот 2 граней на 90 градусов
         this.turn(names[4], 0);
         this.turn(names[5], 1);
     }
 
-    void rotateFace(int axis, int number, int direction) {
+    void rotateFace(int axis, int number, int direction) { //Поворачивает грань
+        //axis(0 - X, 1 - Y, 2 - Z)(O - левый верхний ближний угол)(Ось X - вправо, Y - вглубь, Z - вниз)
+        //number - номер грани от 0 по size - 1
+        //direction(0 - вправо || вверх || против часовой; 1 - влево || вниз || по часовой)
         if (!(axis >= 0 && axis <= 2 && number >= 0 && number < size && (direction == 0 || direction == 1))) {
             throw new IllegalArgumentException();
         }
@@ -147,7 +150,7 @@ class Cube {
         if (recover != -1) this.rotateCube(recover);
     }
 
-    void confuse() {
+    void confuse() { //Случайным образом "перемешивает" кубик
         for (int i = 0; i < 30 * size; i++) {
             this.rotateFace(new Random().nextInt(3), new Random().nextInt(size), new Random().nextInt(2));
         }
