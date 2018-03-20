@@ -99,7 +99,7 @@ class Cube {
     }
 
     void rotateFace(int axis, int number, int direction) { //Поворачивает грань
-        //axis(0 - X, 1 - Y, 2 - Z)(O - левый верхний ближний угол)(Ось X - вправо, Y - вглубь, Z - вниз)
+        //axis(0 - X, 1 - Y, 2 - Z)(O - левый верхний ближний угол)(Ось X - вправо, Y - вниз, Z - вглубь)
         //number - номер грани от 0 по size - 1
         //direction(0 - вправо || вверх || против часовой; 1 - влево || вниз || по часовой)
         if (!(axis >= 0 && axis <= 2 && number >= 0 && number < size && (direction == 0 || direction == 1))) {
