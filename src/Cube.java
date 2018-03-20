@@ -4,7 +4,7 @@ import java.util.Random;
 
 class Cube {
 
-    private int size;
+    final int size;
 
     private Character[][][] value;
 
