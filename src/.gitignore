@@ -1,0 +1,10 @@
+# User-specific stuff:
+.idea
+!.idea/libraries
+
+## File-based project format:
+
+## Plugin-specific files:
+
+#IntelliJ
+out
