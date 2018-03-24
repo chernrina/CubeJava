@@ -6,9 +6,9 @@ class Cube {
 
     final int size;
 
-    private Character[][][] value; //Хранит значение граней
+    private final Character[][][] value; //Хранит значение граней
 
-    private HashMap<Character, Integer> faces = new HashMap<>();
+    private final HashMap<Character, Integer> faces = new HashMap<>();
 
     private final Character[] colors = {'W', 'Y', 'R', 'O', 'B', 'G'};
 
