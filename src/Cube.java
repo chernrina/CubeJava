@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 class Cube {
@@ -8,7 +9,7 @@ class Cube {
 
     private final Character[][][] value; //Хранит значение граней
 
-    private final HashMap<Character, Integer> faces = new HashMap<>();
+    private final Map<Character, Integer> faces = new HashMap<>();
 
     private final Character[] colors = {'W', 'Y', 'R', 'O', 'B', 'G'};
 
@@ -102,9 +103,8 @@ class Cube {
         //axis(0 - X, 1 - Y, 2 - Z)(O - левый верхний ближний угол)(Ось X - вправо, Y - вниз, Z - вглубь)
         //number - номер грани от 0 по size - 1
         //direction(0 - вправо || вверх || против часовой; 1 - влево || вниз || по часовой)
-        if (!(axis >= 0 && axis <= 2 && number >= 0 && number < size && (direction == 0 || direction == 1))) {
+        if (!(axis >= 0 && axis <= 2 && number >= 0 && number < size && (direction == 0 || direction == 1)))
             throw new IllegalArgumentException();
-        }
         int recover;
         switch (axis) {
             case 1: {
