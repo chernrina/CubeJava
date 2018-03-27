@@ -3,7 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-class Cube {
+public class Cube {
 
     final int size;
 
@@ -15,7 +15,7 @@ class Cube {
 
     private final Character[] facesName = {'F', 'B', 'L', 'R', 'D', 'U'};
 
-    Cube(int size) {
+    public Cube(int size) {
         this.size = size;
         value = new Character[6][size][size];
         for (int i = 0; i < 6; i++) {
@@ -51,7 +51,7 @@ class Cube {
         }
     }
 
-    void rotateCube(int direction) { //Поворачивает кубик
+    public void rotateCube(int direction) { //Поворачивает кубик
         Character[] names;
         switch (direction) {
             case 0: { //Вправо
@@ -99,7 +99,7 @@ class Cube {
         this.turn(names[5], 1);
     }
 
-    void rotateFace(int axis, int number, int direction) { //Поворачивает грань
+    public void rotateFace(int axis, int number, int direction) { //Поворачивает грань
         //axis(0 - X, 1 - Y, 2 - Z)(O - левый верхний ближний угол)(Ось X - вправо, Y - вниз, Z - вглубь)
         //number - номер грани от 0 по size - 1
         //direction(0 - вправо || вверх || против часовой; 1 - влево || вниз || по часовой)
@@ -150,17 +150,17 @@ class Cube {
         if (recover != -1) this.rotateCube(recover);
     }
 
-    void confuse() { //Случайным образом "перемешивает" кубик
+    public void confuse() { //Случайным образом "перемешивает" кубик
         for (int i = 0; i < 30 * size; i++) {
             this.rotateFace(new Random().nextInt(3), new Random().nextInt(size), new Random().nextInt(2));
         }
     }
 
-    Character[][] getFace(char name) {
+    public Character[][] getFace(char name) {
         return value[faces.get(name)];
     }
 
-    void printlnCube() {
+    public void printlnCube() {
         for (int i = 0; i < 6; i++) {
             System.out.println(facesName[i] + ":");
             for (int j = 0; j < size; j++) {
