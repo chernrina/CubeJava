@@ -1,13 +1,12 @@
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class CubeTest {
     private Cube c = new Cube(3);
-
     @Test
     void rotateFaceAndCube() {
         assertEquals(true,
