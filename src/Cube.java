@@ -7,17 +7,17 @@ public class Cube {
 
     final int size;
 
-    private final Character[][][] value; //Хранит значение граней
+    private final char[][][] value; //Хранит значение граней
 
     private final Map<Character, Integer> faces = new HashMap<>();
 
-    private final Character[] colors = {'W', 'Y', 'R', 'O', 'B', 'G'};
+    private static final char[] colors = {'W', 'Y', 'R', 'O', 'B', 'G'};
 
-    private final Character[] facesName = {'F', 'B', 'L', 'R', 'D', 'U'};
+    private static final Character[] facesName = {'F', 'B', 'L', 'R', 'D', 'U'};
 
     public Cube(int size) {
         this.size = size;
-        value = new Character[6][size][size];
+        value = new char[6][size][size];
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < size; j++) {
                 for (int k = 0; k < size; k++) {
@@ -30,7 +30,7 @@ public class Cube {
 
     private void turn(char name, int direction) { //Поворачивает грань против(direction == 0) и по(direction == 1) часовой стрелки грань name
         if (!(Arrays.asList(facesName).contains(name))) throw new IllegalArgumentException();
-        Character[][] rotate = new Character[size][size];
+        char[][] rotate = new char[size][size];
         switch (direction) {
             case 0: {
                 for (int i = 0; i < size; i++) for (int j = 0; j < size; j++) {
@@ -51,19 +51,19 @@ public class Cube {
         }
     }
 
-    public void rotateCube(int direction) { //Поворачивает кубик
-        Character[] names;
+    public void rotateCube(int direction) { //Поворачивает кубик. У пользователь перед глазами всегда фасад
+        char[] names;
         switch (direction) {
             case 0: { //Вправо
-                names = new Character[]{'F', 'R', 'B', 'L', 'U', 'D'};
+                names = new char[]{'F', 'R', 'B', 'L', 'U', 'D'};
                 break;
             }
             case 1: { //Влево
-                names = new Character[]{'L', 'B', 'R', 'F', 'D', 'U'};
+                names = new char[]{'L', 'B', 'R', 'F', 'D', 'U'};
                 break;
             }
             case 2: { //Вверх
-                names = new Character[]{'F', 'U', 'B', 'D', 'L', 'R'};
+                names = new char[]{'F', 'U', 'B', 'D', 'L', 'R'};
                 this.turn('U', 0);
                 this.turn('U', 0);
                 this.turn('B', 0);
@@ -71,7 +71,7 @@ public class Cube {
                 break;
             }
             case 3: { //Вниз
-                names = new Character[]{'D', 'B', 'U', 'F', 'R', 'L'};
+                names = new char[]{'D', 'B', 'U', 'F', 'R', 'L'};
                 this.turn('D', 0);
                 this.turn('D', 0);
                 this.turn('B', 0);
@@ -79,12 +79,12 @@ public class Cube {
                 break;
             }
             case 4: { //Против часовой
-                names = new Character[]{'L', 'D', 'R', 'U', 'F', 'B'};
+                names = new char[]{'L', 'D', 'R', 'U', 'F', 'B'};
                 for (int i = 0; i < 4; i++) this.turn(names[i], 0);
                 break;
             }
             case 5: { //По часовой
-                names = new Character[]{'U', 'R', 'D', 'L', 'B', 'F'};
+                names = new char[]{'U', 'R', 'D', 'L', 'B', 'F'};
                 for (int i = 0; i < 4; i++) this.turn(names[i], 1);
                 break;
             }
@@ -100,6 +100,7 @@ public class Cube {
     }
 
     public void rotateFace(int axis, int number, int direction) { //Поворачивает грань
+        //У пользователь перед глазами всегда фасад
         //axis(0 - X, 1 - Y, 2 - Z)(O - левый верхний ближний угол)(Ось X - вправо, Y - вниз, Z - вглубь)
         //number - номер грани от 0 по size - 1
         //direction(0 - вправо || вверх || против часовой; 1 - влево || вниз || по часовой)
@@ -119,19 +120,19 @@ public class Cube {
             }
             default: recover = -1;
         }
-        Character[] names;
+        char[] names;
         switch (direction) {
             case 0: {
-                names = new Character[]{'F', 'U', 'B', 'D'};
+                names = new char[]{'F', 'U', 'B', 'D'};
                 break;
             }
             case 1: {
-                names = new Character[]{'F', 'D', 'B', 'U'};
+                names = new char[]{'F', 'D', 'B', 'U'};
                 break;
             }
-            default: names = new Character[0];
+            default: names = new char[0];
         }
-        Character[] temp = new Character[size];
+        char[] temp = new char[size];
         for (int i = 0; i < size; i++) temp[i] = value[faces.get(names[3])][i][number];
         for (int i = 0; i < size; i++) {
             value[faces.get(names[3])][i][number] = value[faces.get(names[2])][size - 1 - i][size - 1 - number];
@@ -151,22 +152,47 @@ public class Cube {
     }
 
     public void confuse() { //Случайным образом "перемешивает" кубик
+        Random random = new Random();
         for (int i = 0; i < 30 * size; i++) {
-            this.rotateFace(new Random().nextInt(3), new Random().nextInt(size), new Random().nextInt(2));
+            this.rotateFace(random.nextInt(3), random.nextInt(size), random.nextInt(2));
         }
     }
 
-    public Character[][] getFace(char name) {
+    public char[][] getFace(char name) {
         return value[faces.get(name)];
     }
 
     public void printlnCube() {
-        for (int i = 0; i < 6; i++) {
-            System.out.println(facesName[i] + ":");
-            for (int j = 0; j < size; j++) {
-                for (int k = 0; k < size; k++) System.out.print(value[faces.get(facesName[i])][j][k] + " ");
-                System.out.println();
+
+        for (int i = 0; i < size; i++) {
+            System.out.print("                ");
+            for (int j = 0; j < size; j++) System.out.print(value[faces.get('U')][i][j] + " ");
+            System.out.println();
+        }
+        char[] middle = {'B', 'L', 'F', 'R'};
+        for (int i = 0; i < size; i++) {
+            for (int k = 0; k < 4; k++) {
+                for (int j = 0; j < size; j++) System.out.print(value[faces.get(middle[k])][i][j] + " ");
+                System.out.print("  ");
+            }
+            System.out.println();
+        }
+        for (int i = 0; i < size; i++) {
+            System.out.print("                ");
+            for (int j = 0; j < size; j++) System.out.print(value[faces.get('D')][i][j] + " ");
+            System.out.println();
+        }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (int k = 0; k < 6; k++) {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++)
+                    result.append(value[faces.get(facesName[k])][i][j]);
             }
         }
+        return result.toString();
     }
 }
