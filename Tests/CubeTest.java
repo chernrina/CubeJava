@@ -1,7 +1,5 @@
 import org.junit.jupiter.api.Test;
 
-import java.util.*;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -59,5 +57,16 @@ class CubeTest {
         assertEquals(true, s.split("O").length == size);
         assertEquals(true, s.split("B").length == size);
         assertEquals(true, s.split("G").length == size);
+    }
+
+    @Test
+    void equalsTest() {
+        assertEquals(true, c.equals(new Cube(3)));
+        assertEquals(false, c.equals(null));
+        assertEquals(false, c.equals(new Cube(4)));
+        c.rotateCube(4);
+        assertEquals(true, c.equals(new Cube(3)));
+        c.rotateFace(0, 0, 0);
+        assertEquals(false, c.equals(new Cube(3)));
     }
 }

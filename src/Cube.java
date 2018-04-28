@@ -1,7 +1,4 @@
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class Cube {
 
@@ -194,5 +191,34 @@ public class Cube {
             }
         }
         return result.toString();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == this) return true;
+        if (other == null || other.getClass() != this.getClass()) return false;
+
+        Cube c = (Cube) other;
+
+        if (c.size != this.size) return false;
+
+        boolean cubeIsEquals = false;
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 4; j++) {
+                if (Objects.equals(this.toString(), c.toString())) {
+                    cubeIsEquals = true;
+                    break;
+                }
+                c.rotateCube(5);
+            }
+            if (cubeIsEquals) break;
+            c.rotateCube((i % 2) + 1);
+        }
+        return cubeIsEquals;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.size;
     }
 }
