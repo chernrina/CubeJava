@@ -12,8 +12,11 @@ public class Cube {
 
     private static final String[] facesName = {"Front", "Back", "Left", "Right", "Down", "Up"};
 
+    private Random random;
+
     public Cube(int size) {
         this.size = size;
+        random = new Random();
         value = new char[6][size][size];
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < size; j++) {
@@ -149,7 +152,6 @@ public class Cube {
     }
 
     public void confuse() { //Случайным образом "перемешивает" кубик
-        Random random = new Random();
         for (int i = 0; i < 30 * size; i++) {
             this.rotateFace(random.nextInt(3), random.nextInt(size), random.nextInt(2));
         }
