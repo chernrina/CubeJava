@@ -12,7 +12,7 @@ public class Cube {
 
     private static final String[] facesName = {"Front", "Back", "Left", "Right", "Down", "Up"};
 
-    private Random random;
+    private static Random random;
 
     public Cube(int size) {
         this.size = size;
@@ -161,7 +161,7 @@ public class Cube {
         return value[faces.get(name)];
     }
 
-    public String scan() {
+    public String scan() { //развёртка кубика
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < size; i++) {
             result.append("                ");
