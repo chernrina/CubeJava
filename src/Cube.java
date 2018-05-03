@@ -28,7 +28,7 @@ public class Cube {
         }
     }
 
-    public void createCube(char[][][] value) {
+    public void createCube(char[][][] value) { //Возможно задать несобираемый кубик!
         if (value.length != 6) throw new IllegalArgumentException();
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < size; j++) {
@@ -184,7 +184,7 @@ public class Cube {
     public String scan() { //развёртка кубика
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < size; i++) {
-            result.append("                ");
+            result.append("              ");
             for (int j = 0; j < size; j++) result.append(value[faces.get("Up")][i][j]).append(" ");
             result.append('\n');
         }
@@ -192,12 +192,12 @@ public class Cube {
         for (int i = 0; i < size; i++) {
             for (int k = 0; k < 4; k++) {
                 for (int j = 0; j < size; j++) result.append(value[faces.get(middle[k])][i][j]).append(" ");
-                result.append("  ");
+                result.append(" ");
             }
             result.append("\n");
         }
         for (int i = 0; i < size; i++) {
-            result.append("                ");
+            result.append("              ");
             for (int j = 0; j < size; j++) result.append(value[faces.get("Down")][i][j]).append(" ");
             result.append("\n");
         }

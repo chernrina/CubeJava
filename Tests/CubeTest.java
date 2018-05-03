@@ -12,6 +12,13 @@ class CubeTest {
     }
 
     @Test
+    void scanTest() {
+        assertEquals("              G G G \n              G G G \n              G G G \n" +
+                "Y Y Y  R R R  W W W  O O O  \nY Y Y  R R R  W W W  O O O  \nY Y Y  R R R  W W W  O O O  \n" +
+                "              B B B \n              B B B \n              B B B \n" ,c.scan());
+    }
+
+    @Test
     void rotateCubeAndFaceTest() {
         c.rotateFace(0, 2, 0);
         assertEquals("WWBWWBWWBGYYGYYGYYRRRRRRRRROOOOOOOOOBBYBBYBBYGGWGGWGGW", c.toString());
@@ -35,14 +42,20 @@ class CubeTest {
 
     @Test
     void randomTest() {
-        c.rotateCube(4);
-        c.rotateCube(4);
-        c.rotateCube(4);
-        c.rotateCube(4);
-        c.rotateFace(0, 0, 0);
-        c.rotateFace(0, 0, 0);
-        c.rotateFace(0, 0, 0);
-        c.rotateFace(0, 0, 0);
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 4; j++) {
+                c.rotateCube(i);
+            }
+        }
+        for (int i = 0; i < 4; i++) {
+            c.rotateFace(0, 0, 0);
+        }
+        for (int i = 0; i < 4; i++) {
+            c.rotateFace(1, 1, 1);
+        }
+        for (int i = 0; i < 4; i++) {
+            c.rotateFace(2, c.size-1, 0);
+        }
         assertEquals("WWWWWWWWWYYYYYYYYYRRRRRRRRROOOOOOOOOBBBBBBBBBGGGGGGGGG", c.toString());
     }
 
