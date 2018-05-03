@@ -28,6 +28,26 @@ public class Cube {
         }
     }
 
+    public void createCube(char[][][] value) {
+        if (value.length != 6) throw new IllegalArgumentException();
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < size; j++) {
+                for (int k = 0; k < size; k++) {
+                    boolean charIsIncorrect = true;
+                    for (char c: colors) {
+                        if (c == value[i][j][k]) {
+                            charIsIncorrect = false;
+                            break;
+                        }
+                    }
+                    if (charIsIncorrect) throw new IllegalArgumentException();
+                    this.value[i][j][k] = value[i][j][k];
+                }
+            }
+            faces.put(facesName[i], i);
+        }
+    }
+
     private void turn(String name, int direction) { //Поворачивает грань против(direction == 0) и по(direction == 1) часовой стрелки грань name
         if (!(Arrays.asList(facesName).contains(name))) throw new IllegalArgumentException();
         char[][] rotate = new char[size][size];
