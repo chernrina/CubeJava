@@ -19,6 +19,19 @@ class CubeTest {
     }
 
     @Test
+    void createCubeTest() {
+        char[][][] value = new char[][][] { { { 'W', 'W', 'W' }, { 'R', 'R', 'R' }, { 'W', 'W', 'W' } },
+                                            { { 'Y', 'Y', 'Y' }, { 'O', 'O', 'O' }, { 'Y', 'Y', 'Y' } },
+                                            { { 'R', 'R', 'R' }, { 'Y', 'Y', 'Y' }, { 'R', 'R', 'R' } },
+                                            { { 'O', 'O', 'O' }, { 'W', 'W', 'W' }, { 'O', 'O', 'O' } },
+                                            { { 'B', 'B', 'B' }, { 'B', 'B', 'B' }, { 'B', 'B', 'B' } },
+                                            { { 'G', 'G', 'G' }, { 'G', 'G', 'G' }, { 'G', 'G', 'G' } } };
+        Cube c1 = new Cube(3);
+        c1.createCube(value);
+        assertEquals("WWWRRRWWWYYYOOOYYYRRRYYYRRROOOWWWOOOBBBBBBBBBGGGGGGGGG", c1.toString());
+    }
+
+    @Test
     void rotateCubeAndFaceTest() {
         c.rotateFace(0, 2, 0);
         assertEquals("WWBWWBWWBGYYGYYGYYRRRRRRRRROOOOOOOOOBBYBBYBBYGGWGGWGGW", c.toString());
