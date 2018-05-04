@@ -30,6 +30,13 @@ public class Cube {
 
     public void createCube(char[][][] value) { //Возможно задать несобираемый кубик!
         if (value.length != 6) throw new IllegalArgumentException();
+        Map<Character, Integer> map = new HashMap<>();
+        map.put('W', 0);
+        map.put('Y', 0);
+        map.put('R', 0);
+        map.put('O', 0);
+        map.put('B', 0);
+        map.put('G', 0);
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < size; j++) {
                 for (int k = 0; k < size; k++) {
@@ -41,6 +48,16 @@ public class Cube {
                         }
                     }
                     if (charIsIncorrect) throw new IllegalArgumentException();
+                    map.put(value[i][j][k], map.get(value[i][j][k]) + 1);
+                }
+            }
+        }
+        int num = size * size;
+        if (map.get('W') != num || map.get('Y') != num || map.get('R') != num ||
+            map.get('O') != num || map.get('B') != num || map.get('G') != num) throw new IllegalArgumentException();
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < size; j++) {
+                for (int k = 0; k < size; k++) {
                     this.value[i][j][k] = value[i][j][k];
                 }
             }
@@ -119,61 +136,106 @@ public class Cube {
         this.turn(names[5], 1);
     }
 
-    public void rotateFace(int axis, int number, int direction) { //Поворачивает грань
-        //У пользователь перед глазами всегда фасад
-        //axis(0 - X, 1 - Y, 2 - Z)(O - левый верхний ближний угол)(Ось X - вправо, Y - вниз, Z - вглубь)
-        //number - номер грани от 0 по size - 1
-        //direction(0 - вправо || вверх || против часовой; 1 - влево || вниз || по часовой)
-        if (!(axis >= 0 && axis <= 2 && number >= 0 && number < size && (direction == 0 || direction == 1)))
-            throw new IllegalArgumentException();
-        int recover;
-        switch (axis) {
-            case 1: {
-                this.rotateCube(4);
-                recover = 5;
+    public void rotateFace(String face, int number, int direction) { //Поворачивает грань
+        //face - имя грани
+        //number - номер промежуточной грани от 0 по size - 1
+        //direction(0 - вправо, 1 - влево, 2 - вверх, 3 - вниз)
+        if (number < 0 || number >= size || direction < 0 || direction > 4) throw new IllegalArgumentException();
+        boolean nameIsIncorrect = true;
+        for (int i = 0; i < 6; i++) {
+            if (Objects.equals(facesName[i], face)) {
+                nameIsIncorrect = false;
                 break;
             }
-            case 2: {
+        }
+        if (nameIsIncorrect) throw new IllegalArgumentException();
+        int recover;
+        switch (face) {
+            case "Back": {
+                this.rotateCube(0);
+                this.rotateCube(0);
+                recover = 7; // 1 and 1 (7 % 6 and 7 / 6)
+                break;
+            }
+            case "Left": {
+                this.rotateCube(0);
+                recover = 1;
+                break;
+            }
+            case "Right": {
                 this.rotateCube(1);
                 recover = 0;
+                break;
+            }
+            case "Down": {
+                this.rotateCube(2);
+                recover = 3;
+                break;
+            }
+            case "Up": {
+                this.rotateCube(3);
+                recover = 2;
                 break;
             }
             default: recover = -1;
         }
         String[] names;
         switch (direction) {
-            case 0: {
+            case 0: { //Вправо
+                names = new String[]{"Front", "Right", "Back", "Left"};
+                break;
+            }
+            case 1: { //Влево
+                names = new String[]{"Front", "Left", "Back", "Right"};
+                break;
+            }
+            case 2: { //Вверх
                 names = new String[]{"Front", "Up", "Back", "Down"};
                 break;
             }
-            case 1: {
+            case 3: { //Вниз
                 names = new String[]{"Front", "Down", "Back", "Up"};
                 break;
             }
             default: names = new String[0];
         }
         char[] temp = new char[size];
-        for (int i = 0; i < size; i++) temp[i] = value[faces.get(names[3])][i][number];
-        for (int i = 0; i < size; i++) {
-            value[faces.get(names[3])][i][number] = value[faces.get(names[2])][size - 1 - i][size - 1 - number];
+        if (direction == 0 || direction == 1) {
+            for (int i = 0; i < size; i++) temp[i] = value[faces.get(names[3])][number][i];
+            for (int j = 3; j > 0; j--) {
+                for (int i = 0; i < size; i++) {
+                    value[faces.get(names[j])][number][i] = value[faces.get(names[j - 1])][number][i];
+                }
+            }
+            for (int i = 0; i < size; i++) {
+                value[faces.get(names[0])][number][i] = temp[i];
+            }
+            if (number == 0) this.turn("Up", direction); //вообще '(0 + direction) % 2'
+            if (number == size - 1) this.turn("Down", (1 + direction) % 2);
+        } else {
+            for (int i = 0; i < size; i++) temp[i] = value[faces.get(names[3])][i][number];
+            for (int i = 0; i < size; i++) {
+                value[faces.get(names[3])][i][number] = value[faces.get(names[2])][size - 1 - i][size - 1 - number];
+            }
+            for (int i = 0; i < size; i++) {
+                value[faces.get(names[2])][size - 1 - i][size - 1 - number] = value[faces.get(names[1])][i][number];
+            }
+            for (int i = 0; i < size; i++) {
+                value[faces.get(names[1])][i][number] = value[faces.get(names[0])][i][number];
+            }
+            for (int i = 0; i < size; i++) {
+                value[faces.get(names[0])][i][number] = temp[i];
+            }
+            if (number == 0) this.turn("Left", (1 + direction) % 2);
+            if (number == size - 1) this.turn("Right", (1 + direction) % 2);
         }
-        for (int i = 0; i < size; i++) {
-            value[faces.get(names[2])][size - 1 - i][size - 1 - number] = value[faces.get(names[1])][i][number];
-        }
-        for (int i = 0; i < size; i++) {
-            value[faces.get(names[1])][i][number] = value[faces.get(names[0])][i][number];
-        }
-        for (int i = 0; i < size; i++) {
-            value[faces.get(names[0])][i][number] = temp[i];
-        }
-        if (number == 0) this.turn("Left", direction); //вообще '(0 + direction) % 2'
-        if (number == size - 1) this.turn("Right", (1 + direction) % 2);
-        if (recover != -1) this.rotateCube(recover);
+        if (recover != -1) this.rotateCube(recover % 6);
+        if (recover / 6 != 0) this.rotateCube(1);
     }
 
     public void confuse() { //Случайным образом "перемешивает" кубик
         for (int i = 0; i < 30 * size; i++) {
-            this.rotateFace(random.nextInt(3), random.nextInt(size), random.nextInt(2));
+            this.rotateFace(facesName[random.nextInt(3)], random.nextInt(size), random.nextInt(2));
         }
     }
 

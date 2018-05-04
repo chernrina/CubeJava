@@ -33,16 +33,18 @@ class CubeTest {
 
     @Test
     void rotateCubeAndFaceTest() {
-        c.rotateFace(0, 2, 0);
+        c.rotateFace("Front", 2, 2);
         assertEquals("WWBWWBWWBGYYGYYGYYRRRRRRRRROOOOOOOOOBBYBBYBBYGGWGGWGGW", c.toString());
 
-        c.rotateFace(1, 0, 0);
+        c.rotateFace("Left", 0, 0);
         assertEquals("RRRWWBWWBOOOGYYGYYGYYRRRRRRWWBOOOOOOBBYBBYBBYWWWGGGGGG", c.toString());
 
-        c.rotateFace(2, 1, 1);
+        c.rotateFace("Up", 1, 0);
         assertEquals("RRRWWBWWBOOOGYYGYYGBYRBRRYRWGBOGOOGOBBYOOWBBYWWWRRYGGG", c.toString());
 
-        assertThrows(IllegalArgumentException.class, () -> c.rotateFace(c.size, 3, 2));
+        assertThrows(IllegalArgumentException.class, () -> c.rotateFace("Facade", 3, 2));
+        assertThrows(IllegalArgumentException.class, () -> c.rotateFace("Left", c.size, 2));
+        assertThrows(IllegalArgumentException.class, () -> c.rotateFace("Left", 3, 6));
 
         c.rotateCube(2);
         assertEquals("BBYOOWBBYGGGYRRWWWYRRBBYGRROOWGGGOOBYYGYYGOOORRRWWBWWB", c.toString());
@@ -61,13 +63,13 @@ class CubeTest {
             }
         }
         for (int i = 0; i < 4; i++) {
-            c.rotateFace(0, 0, 0);
+            c.rotateFace("Front", 0, 2);
         }
         for (int i = 0; i < 4; i++) {
-            c.rotateFace(1, 1, 1);
+            c.rotateFace("Front", 1, 1);
         }
         for (int i = 0; i < 4; i++) {
-            c.rotateFace(2, c.size-1, 0);
+            c.rotateFace("Right", c.size-1, 2);
         }
         assertEquals("WWWWWWWWWYYYYYYYYYRRRRRRRRROOOOOOOOOBBBBBBBBBGGGGGGGGG", c.toString());
     }
@@ -92,7 +94,7 @@ class CubeTest {
         assertEquals(false, c.equals(new Cube(4)));
         c.rotateCube(4);
         assertEquals(true, c.equals(new Cube(3)));
-        c.rotateFace(0, 0, 0);
+        c.rotateFace("Front", 0, 0);
         assertEquals(false, c.equals(new Cube(3)));
     }
 }
