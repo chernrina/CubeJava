@@ -262,8 +262,8 @@ public class Cube {
      * @return пара: ключ - пара (номер строки, номер столбца) - координаты кубика на face,
      * значение = 1 - если цвет oneSide на стороне face, 2 - если на стороне face цвет twoSide
      */
-    public Map<Pair<Integer, Integer>, Integer> haveMiddleCube(String face, char oneSide, char twoSide) {
-        Map<Pair<Integer, Integer>, Integer> ans = new HashMap<>();
+    public Pair<Pair<Integer, Integer>, Integer> haveMiddleCube(String face, char oneSide, char twoSide) {
+        Pair<Pair<Integer, Integer>, Integer> ans = new Pair<>(new Pair<>(-1,-1),-1);
         if (oneSide == twoSide) return ans;
         switch (oneSide) {
             case 'W':
@@ -433,7 +433,7 @@ public class Cube {
                 }
                 if ((compare == 1 && value[faces.get(nextFace)][ansI][ansJ] == twoSide) ||
                         (compare == 2 && value[faces.get(nextFace)][ansI][ansJ] == oneSide)) {
-                    ans.put(new Pair<>(row, column), compare);
+                    ans = new Pair(new Pair<>(row, column), compare);
                     return ans;
                 }
             }
@@ -452,9 +452,10 @@ public class Cube {
      *                 2-на стороне front второй цвет   2- =|= второй цвет
      *                 3-на стороне front третий цвет   3- =|= третий цвет
      */
-    public Map<Pair<Integer, Integer>, Pair<Integer, Integer>>
+    public Pair<Pair<Integer, Integer>, Pair<Integer, Integer>>
     haveCorner(String face, char oneSide, char twoSide, char threeSide) {
-        Map<Pair<Integer, Integer>, Pair<Integer, Integer>> ans = new HashMap<>();
+        Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> ans =
+                new Pair<>(new Pair<>(-1,-1),new Pair<>(-1,-1));
         int indexOfFace = faces.get(face);
         String nextFace = "";
         int i = 0;
@@ -562,7 +563,7 @@ public class Cube {
                         }
                     }
                     if (found) {
-                        ans.put(new Pair<>(row, column), new Pair<>(compare, newCompare));
+                        ans = new Pair(new Pair<>(row, column), new Pair<>(compare, newCompare));
                         return ans;
                     }
                 }

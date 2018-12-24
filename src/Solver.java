@@ -42,23 +42,23 @@ public class Solver {
         List foundAll = new ArrayList();
         while (foundAll.size() != 4) {
             for (char color : cube.getColors()) { //проверка, сколько изначально кубиков на своем месте
-                Map<Pair<Integer, Integer>, Integer> same = cube.haveMiddleCube(layer, colorOfLayer, color);
-                if (!same.isEmpty() &&
+                Pair<Pair<Integer, Integer>, Integer> same = cube.haveMiddleCube(layer, colorOfLayer, color);
+                if (same.getValue() != -1 &&
                         !foundAll.contains(new Pair<>(colorOfLayer, color))) {
-                    for (Pair<Integer, Integer> pair : same.keySet()) {
-                        if (same.get(pair) == 1) foundAll.add(new Pair<>(colorOfLayer, color));
-                        else if (pair.getKey() != 2) {
-                            if (pair.getValue() == 0) cube.rotateCube(0);
-                            if (pair.getValue() == 2) cube.rotateCube(1);
-                            cube.rotateFace("Left", 2, 3);
-                            cube.rotateFace("Front", 2, 0);
-                            cube.rotateFace("Front", 2, 3);
-                            cube.rotateFace("Front", 2, 1);
-                            if (pair.getValue() == 0) cube.rotateCube(1);
-                            if (pair.getValue() == 2) cube.rotateCube(0);
-                            foundAll.add(new Pair<>(colorOfLayer, color));
-                        }
+                    Pair<Integer, Integer> pair = same.getKey();
+                    if (same.getValue() == 1) foundAll.add(new Pair<>(colorOfLayer, color));
+                    else if (pair.getKey() != 2) {
+                        if (pair.getValue() == 0) cube.rotateCube(0);
+                        if (pair.getValue() == 2) cube.rotateCube(1);
+                        cube.rotateFace("Left", 2, 3);
+                        cube.rotateFace("Front", 2, 0);
+                        cube.rotateFace("Front", 2, 3);
+                        cube.rotateFace("Front", 2, 1);
+                        if (pair.getValue() == 0) cube.rotateCube(1);
+                        if (pair.getValue() == 2) cube.rotateCube(0);
+                        foundAll.add(new Pair<>(colorOfLayer, color));
                     }
+
                 }
             }
             for (String face : cube.getFacesName()) { //поиск оставшихся кубиков
@@ -99,39 +99,39 @@ public class Solver {
                     }
                     if (face.equals("Left")) cube.rotateCube(0);
                     if (face.equals("Right")) cube.rotateCube(1);
-                    Map<Pair<Integer, Integer>, Integer> sameColor = cube.haveMiddleCube("Front",
+                    Pair<Pair<Integer, Integer>, Integer> sameColor = cube.haveMiddleCube("Front",
                             cube.getColors()[cube.getFaces().get("Front")], colorOfLayer);
-                    if (sameColor.isEmpty()) {
-                        Map<Pair<Integer, Integer>, Integer> search = cube.haveMiddleCube(layer, colorOfLayer,
+                    if (sameColor.getValue() == -1) {
+                        Pair<Pair<Integer, Integer>, Integer> search = cube.haveMiddleCube(layer, colorOfLayer,
                                 cube.getColors()[cube.getFaces().get("Front")]);
-                        for (Pair<Integer, Integer> pair : search.keySet()) {
-                            if (pair.getKey() == 2) {
-                                cube.rotateFace("Left", 2, 3);
+                        Pair<Integer, Integer> pair = search.getKey();
+                        if (pair.getKey() == 2) {
+                            cube.rotateFace("Left", 2, 3);
+                            cube.rotateFace("Front", 2, 1);
+                            cube.rotateFace("Front", 2, 1);
+                            cube.rotateFace("Left", 2, 2);
+                            cube.rotateFace("Front", 2, 1);
+                            cube.rotateFace("Front", 2, 1);
+                            cube.rotateFace("Left", 2, 3);
+                        }
+                        switch (pair.getValue()) {
+                            case 0: {
+                                cube.rotateFace("Front", 0, 2);
                                 cube.rotateFace("Front", 2, 1);
-                                cube.rotateFace("Front", 2, 1);
-                                cube.rotateFace("Left", 2, 2);
-                                cube.rotateFace("Front", 2, 1);
-                                cube.rotateFace("Front", 2, 1);
-                                cube.rotateFace("Left", 2, 3);
+                                cube.rotateFace("Front", 0, 3);
+                                cube.rotateFace("Front", 2, 0);
+                                cube.rotateFace("Front", 0, 2);
+                                break;
                             }
-                            switch (pair.getValue()) {
-                                case 0: {
-                                    cube.rotateFace("Front", 0, 2);
-                                    cube.rotateFace("Front", 2, 1);
-                                    cube.rotateFace("Front", 0, 3);
-                                    cube.rotateFace("Front", 2, 0);
-                                    cube.rotateFace("Front", 0, 2);
-                                    break;
-                                }
-                                case 2: {
-                                    cube.rotateFace("Front", 2, 2);
-                                    cube.rotateFace("Front", 2, 0);
-                                    cube.rotateFace("Front", 2, 3);
-                                    cube.rotateFace("Front", 2, 1);
-                                    cube.rotateFace("Front", 2, 2);
-                                }
+                            case 2: {
+                                cube.rotateFace("Front", 2, 2);
+                                cube.rotateFace("Front", 2, 0);
+                                cube.rotateFace("Front", 2, 3);
+                                cube.rotateFace("Front", 2, 1);
+                                cube.rotateFace("Front", 2, 2);
                             }
                         }
+
                     }
                     if (face.equals("Back")) {
                         cube.rotateCube(0);
@@ -153,86 +153,83 @@ public class Solver {
      *                 поиск кубика на стороне front, постановка его на свободное место в "крест"
      */
     private void cross(List foundAll) {
-        List<Pair<Integer, Integer>> pairs = new ArrayList<>();
-        pairs.add(new Pair<>(0, 1));
         for (char color : sides) {
-            Map<Pair<Integer, Integer>, Integer> same = cube.haveMiddleCube("Front",
+            Pair<Pair<Integer, Integer>, Integer> same = cube.haveMiddleCube("Front",
                     'B', color);
-            if (!same.isEmpty()) {
+            if (same.getValue() != -1) {
                 if (!foundAll.contains(new Pair<>('B', color))) {
-                    for (Pair<Integer, Integer> pair : same.keySet()) {
-                        int way = 0;
-                        int key = 0;
-                        switch (pair.getValue()) {
-                            case 0: {
-                                cube.rotateFace("Front", 0, 2);
-                                cube.rotateFace("Front", 0, 0);
-                                cube.rotateFace("Front", 0, 3);
-                                key = 0;
-                                if (same.get(pair) == 1) way = 2;
-                                else way = 1;
-                                break;
-                            }
-                            case 2: {
-                                cube.rotateFace("Front", 2, 2);
-                                cube.rotateFace("Front", 0, 1);
-                                cube.rotateFace("Front", 2, 3);
-                                key = 0;
-                                if (same.get(pair) == 1) way = 2;
-                                else way = 1;
-                                break;
-                            }
-                            case 1: {
-                                key = pair.getKey();
-                                way = same.get(pair);
-                            }
+                    Pair<Integer, Integer> pair = same.getKey();
+                    int way = 0;
+                    int key = 0;
+                    switch (pair.getValue()) {
+                        case 0: {
+                            cube.rotateFace("Front", 0, 2);
+                            cube.rotateFace("Front", 0, 0);
+                            cube.rotateFace("Front", 0, 3);
+                            key = 0;
+                            if (same.getValue() == 1) way = 2;
+                            else way = 1;
+                            break;
                         }
-                        switch (key) {
-                            case 0: {
-                                if (way == 1) {
-                                    int step = 0;
-                                    while (cube.getValue()[cube.getFaces().get("Down")][0][1] == 'B') {
-                                        cube.rotateCube(1);
-                                        cube.rotateFace("Front", 0, 0);
-                                        step++;
-                                    }
-                                    cube.rotateFace("Left", 2, 2);
-                                    cube.rotateFace("Front", 2, 0);
-                                    cube.rotateFace("Front", 2, 3);
-                                    cube.rotateFace("Front", 2, 1);
-                                    foundAll.add(new Pair<>('B', color));
-                                    while (step != 0) {
-                                        cube.rotateCube(0);
-                                        step--;
-                                    }
-                                } else {
-                                    int step = 0;
-                                    while (cube.getValue()[cube.getFaces().get("Down")][0][1] == 'B') {
-                                        cube.rotateCube(1);
-                                        cube.rotateFace("Front", 0, 0);
-                                        step++;
-                                    }
-                                    cube.rotateFace("Left", 2, 3);
-                                    cube.rotateFace("Left", 2, 3);
-                                    foundAll.add(new Pair<>('B', color));
-                                    while (step != 0) {
-                                        cube.rotateCube(0);
-                                        step--;
-                                    }
+                        case 2: {
+                            cube.rotateFace("Front", 2, 2);
+                            cube.rotateFace("Front", 0, 1);
+                            cube.rotateFace("Front", 2, 3);
+                            key = 0;
+                            if (same.getValue() == 1) way = 2;
+                            else way = 1;
+                            break;
+                        }
+                        case 1: {
+                            key = pair.getKey();
+                            way = same.getValue();
+                        }
+                    }
+                    switch (key) {
+                        case 0: {
+                            if (way == 1) {
+                                int step = 0;
+                                while (cube.getValue()[cube.getFaces().get("Down")][0][1] == 'B') {
+                                    cube.rotateCube(1);
+                                    cube.rotateFace("Front", 0, 0);
+                                    step++;
                                 }
-                                break;
+                                cube.rotateFace("Left", 2, 2);
+                                cube.rotateFace("Front", 2, 0);
+                                cube.rotateFace("Front", 2, 3);
+                                cube.rotateFace("Front", 2, 1);
+                                foundAll.add(new Pair<>('B', color));
+                                while (step != 0) {
+                                    cube.rotateCube(0);
+                                    step--;
+                                }
+                            } else {
+                                int step = 0;
+                                while (cube.getValue()[cube.getFaces().get("Down")][0][1] == 'B') {
+                                    cube.rotateCube(1);
+                                    cube.rotateFace("Front", 0, 0);
+                                    step++;
+                                }
+                                cube.rotateFace("Left", 2, 3);
+                                cube.rotateFace("Left", 2, 3);
+                                foundAll.add(new Pair<>('B', color));
+                                while (step != 0) {
+                                    cube.rotateCube(0);
+                                    step--;
+                                }
                             }
-                            case 2: {
-                                if (way == 2) {
-                                    foundAll.add(new Pair<>('B', color));
+                            break;
+                        }
+                        case 2: {
+                            if (way == 2) {
+                                foundAll.add(new Pair<>('B', color));
 
-                                } else {
-                                    cube.rotateFace("Left", 2, 3);
-                                    cube.rotateFace("Front", 2, 0);
-                                    cube.rotateFace("Front", 2, 3);
-                                    cube.rotateFace("Front", 2, 1);
-                                    foundAll.add(new Pair<>('B', color));
-                                }
+                            } else {
+                                cube.rotateFace("Left", 2, 3);
+                                cube.rotateFace("Front", 2, 0);
+                                cube.rotateFace("Front", 2, 3);
+                                cube.rotateFace("Front", 2, 1);
+                                foundAll.add(new Pair<>('B', color));
                             }
                         }
                     }
@@ -255,143 +252,142 @@ public class Solver {
                 }
                 for (char color : cornersFront) {
                     for (char colorSide : cornersSide) {
-                        Map<Pair<Integer, Integer>, Pair<Integer, Integer>> corner = cube.haveCorner("Front",
+                        Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> corner = cube.haveCorner("Front",
                                 'B', color, colorSide);
-                        if (!corner.isEmpty()) {
+                        if (corner.getKey().getKey() != -1) {
                             if (!foundAll.contains(new Pair<>(color, colorSide))) {
-                                for (Pair pair : corner.keySet()) {
-                                    Pair<Integer, Integer> value = corner.get(pair);
-                                    int keyOfValue;
-                                    char needColor;
-                                    if (pair.equals(new Pair(0, 2))) {
+                                Pair<Integer, Integer> pair = corner.getKey();
+                                Pair<Integer, Integer> value = corner.getValue();
+                                int keyOfValue;
+                                char needColor;
+                                if (pair.equals(new Pair(0, 2))) {
+                                    cube.rotateFace("Front", 0, 1);
+                                    if (value.getKey() == 1) {
+                                        keyOfValue = 2;
+                                        if (value.getValue() == 2) needColor = color;
+                                        else needColor = colorSide;
+                                    } else if (value.getValue() == 1) {
+                                        keyOfValue = 1;
+                                        if (value.getKey() == 2) needColor = color;
+                                        else needColor = colorSide;
+                                    } else {
+                                        keyOfValue = 3;
+                                        if (value.getValue() == 3) needColor = color;
+                                        else needColor = colorSide;
+                                    }
+                                } else if (pair.equals(new Pair(2, 0))) {
+                                    if ((value.getValue() == 3 && i == 0 && colorSide == 'R' && value.getKey() == 2) ||
+                                            (value.getValue() == 3 && i == 1 && colorSide == 'O' && value.getKey() == 2)) {
+                                        foundAll.add(new Pair<>(color, colorSide));
+                                        break;
+                                    } else {
+                                        cube.rotateFace("Front", 0, 2);
                                         cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Front", 0, 3);
                                         if (value.getKey() == 1) {
-                                            keyOfValue = 2;
-                                            if (value.getValue() == 2) needColor = color;
-                                            else needColor = colorSide;
-                                        } else if (value.getValue() == 1) {
                                             keyOfValue = 1;
-                                            if (value.getKey() == 2) needColor = color;
-                                            else needColor = colorSide;
-                                        } else {
-                                            keyOfValue = 3;
                                             if (value.getValue() == 3) needColor = color;
                                             else needColor = colorSide;
-                                        }
-                                    } else if (pair.equals(new Pair(2, 0))) {
-                                        if ((value.getValue() == 3 && i == 0 && colorSide == 'R' && value.getKey() == 2) ||
-                                                (value.getValue() == 3 && i == 1 && colorSide == 'O' && value.getKey() == 2)) {
-                                            foundAll.add(new Pair<>(color, colorSide));
-                                            break;
-                                        } else {
-                                            cube.rotateFace("Front", 0, 2);
-                                            cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Front", 0, 3);
-                                            if (value.getKey() == 1) {
-                                                keyOfValue = 1;
-                                                if (value.getValue() == 3) needColor = color;
-                                                else needColor = colorSide;
-                                            } else if (value.getValue() == 1) {
-                                                keyOfValue = 3;
-                                                if (value.getKey() == 3) needColor = color;
-                                                else needColor = colorSide;
-                                            } else {
-                                                keyOfValue = 2;
-                                                if (value.getKey() == 2) needColor = color;
-                                                else needColor = colorSide;
-                                            }
-                                        }
-                                    } else if (pair.equals(new Pair(2, 2))) {
-                                        if ((value.getValue() == 3 && i == 0 && colorSide == 'O' && value.getKey() == 2) ||
-                                                (value.getValue() == 3 && i == 1 && colorSide == 'R' && value.getKey() == 2)) {
-                                            foundAll.add(new Pair<>(color, colorSide));
-                                            break;
-                                        } else {
-                                            cube.rotateFace("Front", 2, 2);
-                                            cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Front", 2, 3);
-                                            if (value.getKey() == 1) {
-                                                keyOfValue = 3;
-                                                if (value.getValue() == 3) needColor = color;
-                                                else needColor = colorSide;
-                                            } else if (value.getValue() == 1) {
-                                                keyOfValue = 1;
-                                                if (value.getKey() == 3) needColor = color;
-                                                else needColor = colorSide;
-                                            } else {
-                                                keyOfValue = 2;
-                                                if (value.getValue() == 2) needColor = color;
-                                                else needColor = colorSide;
-                                            }
-                                        }
-                                    } else {
-                                        if (value.getKey() == 1) {
-                                            keyOfValue = 1;
-                                            if (value.getValue() == 2) needColor = color;
-                                            else needColor = colorSide;
                                         } else if (value.getValue() == 1) {
-                                            keyOfValue = 2;
-                                            if (value.getKey() == 2) needColor = color;
-                                            else needColor = colorSide;
-                                        } else {
                                             keyOfValue = 3;
                                             if (value.getKey() == 3) needColor = color;
                                             else needColor = colorSide;
+                                        } else {
+                                            keyOfValue = 2;
+                                            if (value.getKey() == 2) needColor = color;
+                                            else needColor = colorSide;
                                         }
                                     }
-                                    switch (keyOfValue) {
-                                        case 1: {
-                                            int step = 0;
-                                            while (cube.getColors()[cube.getFaces().get("Left")] != needColor) {
-                                                cube.rotateCube(0);
-                                                cube.rotateFace("Front", 0, 1);
-                                                step++;
-                                            }
-                                            cube.rotateFace("Left", 2, 2);
-                                            cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Left", 2, 3);
-                                            while (step != 0) {
-                                                cube.rotateCube(1);
-                                                step--;
-                                            }
-                                            foundAll.add(new Pair<>(color, colorSide));
-                                            break;
+                                } else if (pair.equals(new Pair(2, 2))) {
+                                    if ((value.getValue() == 3 && i == 0 && colorSide == 'O' && value.getKey() == 2) ||
+                                            (value.getValue() == 3 && i == 1 && colorSide == 'R' && value.getKey() == 2)) {
+                                        foundAll.add(new Pair<>(color, colorSide));
+                                        break;
+                                    } else {
+                                        cube.rotateFace("Front", 2, 2);
+                                        cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Front", 2, 3);
+                                        if (value.getKey() == 1) {
+                                            keyOfValue = 3;
+                                            if (value.getValue() == 3) needColor = color;
+                                            else needColor = colorSide;
+                                        } else if (value.getValue() == 1) {
+                                            keyOfValue = 1;
+                                            if (value.getKey() == 3) needColor = color;
+                                            else needColor = colorSide;
+                                        } else {
+                                            keyOfValue = 2;
+                                            if (value.getValue() == 2) needColor = color;
+                                            else needColor = colorSide;
                                         }
-                                        case 3: {
-                                            int step = 0;
-                                            while (cube.getValue()[cube.getFaces().get("Down")][0][0]
-                                                    == 'B') {
-                                                cube.rotateCube(0);
-                                                cube.rotateFace("Front", 0, 1);
-                                                step++;
-                                            }
-                                            cube.rotateFace("Front", 0, 2);
+                                    }
+                                } else {
+                                    if (value.getKey() == 1) {
+                                        keyOfValue = 1;
+                                        if (value.getValue() == 2) needColor = color;
+                                        else needColor = colorSide;
+                                    } else if (value.getValue() == 1) {
+                                        keyOfValue = 2;
+                                        if (value.getKey() == 2) needColor = color;
+                                        else needColor = colorSide;
+                                    } else {
+                                        keyOfValue = 3;
+                                        if (value.getKey() == 3) needColor = color;
+                                        else needColor = colorSide;
+                                    }
+                                }
+                                switch (keyOfValue) {
+                                    case 1: {
+                                        int step = 0;
+                                        while (cube.getColors()[cube.getFaces().get("Left")] != needColor) {
+                                            cube.rotateCube(0);
                                             cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Front", 0, 3);
-                                            cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Front", 0, 1);
-                                            while (step != 0) {
-                                                cube.rotateCube(1);
-                                                cube.rotateFace("Front", 0, 0);
-                                                step--;
-                                            }
+                                            step++;
                                         }
-                                        case 2: {
-                                            int step = 0;
-                                            while (cube.getColors()[cube.getFaces().get("Front")] != needColor) {
-                                                cube.rotateCube(0);
-                                                cube.rotateFace("Front", 0, 1);
-                                                step++;
-                                            }
-                                            cube.rotateFace("Front", 0, 2);
+                                        cube.rotateFace("Left", 2, 2);
+                                        cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Left", 2, 3);
+                                        while (step != 0) {
+                                            cube.rotateCube(1);
+                                            step--;
+                                        }
+                                        foundAll.add(new Pair<>(color, colorSide));
+                                        break;
+                                    }
+                                    case 3: {
+                                        int step = 0;
+                                        while (cube.getValue()[cube.getFaces().get("Down")][0][0]
+                                                == 'B') {
+                                            cube.rotateCube(0);
+                                            cube.rotateFace("Front", 0, 1);
+                                            step++;
+                                        }
+                                        cube.rotateFace("Front", 0, 2);
+                                        cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Front", 0, 3);
+                                        cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Front", 0, 1);
+                                        while (step != 0) {
+                                            cube.rotateCube(1);
                                             cube.rotateFace("Front", 0, 0);
-                                            cube.rotateFace("Front", 0, 3);
-                                            while (step != 0) {
-                                                cube.rotateCube(1);
-                                                step--;
-                                            }
-                                            foundAll.add(new Pair<>(color, colorSide));
+                                            step--;
                                         }
+                                    }
+                                    case 2: {
+                                        int step = 0;
+                                        while (cube.getColors()[cube.getFaces().get("Front")] != needColor) {
+                                            cube.rotateCube(0);
+                                            cube.rotateFace("Front", 0, 1);
+                                            step++;
+                                        }
+                                        cube.rotateFace("Front", 0, 2);
+                                        cube.rotateFace("Front", 0, 0);
+                                        cube.rotateFace("Front", 0, 3);
+                                        while (step != 0) {
+                                            cube.rotateCube(1);
+                                            step--;
+                                        }
+                                        foundAll.add(new Pair<>(color, colorSide));
                                     }
                                 }
                             }
@@ -424,101 +420,101 @@ public class Solver {
                 }
                 for (char color : cornersFront) {
                     for (char colorSide : cornersSide) {
-                        Map<Pair<Integer, Integer>, Integer> foundOnUp = cube.haveMiddleCube("Up", color, colorSide);
-                        if (!foundOnUp.isEmpty()) {
-                            for (Pair<Integer, Integer> pair : foundOnUp.keySet()) {
-                                if (pair.getValue() % 2 == 0)
-                                    cube.rotateFace("Front", 0, pair.getValue() / 2);
-                            }
+                        Pair<Pair<Integer, Integer>, Integer> foundOnUp = cube.haveMiddleCube("Up", color, colorSide);
+                        if (foundOnUp.getValue() != -1) {
+                            Pair<Integer, Integer> pair = foundOnUp.getKey();
+                            if (pair.getValue() % 2 == 0)
+                                cube.rotateFace("Front", 0, pair.getValue() / 2);
+
                         }
-                        Map<Pair<Integer, Integer>, Integer> found = cube.haveMiddleCube("Front", color, colorSide);
-                        if (!found.isEmpty()) {
+                        Pair<Pair<Integer, Integer>, Integer> found = cube.haveMiddleCube("Front", color, colorSide);
+                        if (found.getValue() != -1) {
                             if (!foundAll.contains(new Pair<>(color, colorSide))) {
-                                for (Pair<Integer, Integer> pair : found.keySet()) {
-                                    int value = found.get(pair);
-                                    char nextColor = ' ';
-                                    boolean flag = true;
-                                    switch (pair.getValue()) {
-                                        case 2: {
-                                            if (cube.getValue()[cube.getFaces().get("Front")][1][2] ==
+                                Pair<Integer, Integer> pair = found.getKey();
+                                int value = found.getValue();
+                                char nextColor = ' ';
+                                boolean flag = true;
+                                switch (pair.getValue()) {
+                                    case 2: {
+                                        if (cube.getValue()[cube.getFaces().get("Front")][1][2] ==
+                                                cube.getColors()[cube.getFaces().get("Front")]
+                                                && cube.getValue()[cube.getFaces().get("Right")][1][0] ==
+                                                cube.getColors()[cube.getFaces().get("Left")]) {
+                                            foundAll.add(new Pair<>(color, colorSide));
+                                            flag = false;
+                                            break;
+                                        }
+                                        cube.rotateCube(1);
+                                    }
+                                    case 0: {
+                                        if (pair.getValue() != 2) {
+                                            if (cube.getValue()[cube.getFaces().get("Front")][1][0] ==
                                                     cube.getColors()[cube.getFaces().get("Front")]
-                                                    && cube.getValue()[cube.getFaces().get("Right")][1][0] ==
+                                                    && cube.getValue()[cube.getFaces().get("Left")][1][2] ==
                                                     cube.getColors()[cube.getFaces().get("Left")]) {
                                                 foundAll.add(new Pair<>(color, colorSide));
                                                 flag = false;
                                                 break;
                                             }
-                                            cube.rotateCube(1);
                                         }
-                                        case 0: {
-                                            if (pair.getValue() != 2) {
-                                                if (cube.getValue()[cube.getFaces().get("Front")][1][0] ==
-                                                        cube.getColors()[cube.getFaces().get("Front")]
-                                                        && cube.getValue()[cube.getFaces().get("Left")][1][2] ==
-                                                        cube.getColors()[cube.getFaces().get("Left")]) {
-                                                    foundAll.add(new Pair<>(color, colorSide));
-                                                    flag = false;
-                                                    break;
-                                                }
-                                            }
-                                            cube.rotateFace("Front", 0, 2);
-                                            cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Front", 0, 3);
-                                            cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Left", 2, 2);
-                                            cube.rotateFace("Front", 0, 0);
-                                            cube.rotateFace("Left", 2, 3);
-                                            cube.rotateFace("Front", 0, 0);
-                                            cube.rotateFace("Front", 0, 0);
-                                            if (value == 1) {
-                                                if (pair.getValue() == 2) nextColor = color;
-                                                else nextColor = colorSide;
-                                            } else {
-                                                if (pair.getValue() == 2) nextColor = colorSide;
-                                                else nextColor = color;
-                                            }
-                                            break;
-                                        }
-                                        case 1: {
-                                            if (value == 1) nextColor = color;
+                                        cube.rotateFace("Front", 0, 2);
+                                        cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Front", 0, 3);
+                                        cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Left", 2, 2);
+                                        cube.rotateFace("Front", 0, 0);
+                                        cube.rotateFace("Left", 2, 3);
+                                        cube.rotateFace("Front", 0, 0);
+                                        cube.rotateFace("Front", 0, 0);
+                                        if (value == 1) {
+                                            if (pair.getValue() == 2) nextColor = color;
                                             else nextColor = colorSide;
-                                        }
-                                    }
-                                    if (flag) {
-                                        int step = 0;
-                                        while (cube.getValue()[cube.getFaces().get("Front")][1][1] != nextColor) {
-                                            cube.rotateCube(0);
-                                            cube.rotateFace("Front", 0, 1);
-                                            step++;
-                                        }
-                                        if (cube.getValue()[cube.getFaces().get("Up")][2][1] ==
-                                                cube.getColors()[cube.getFaces().get("Left")]) {
-                                            cube.rotateFace("Front", 0, 0);
-                                            cube.rotateFace("Front", 0, 2);
-                                            cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Front", 0, 3);
-                                            cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Left", 2, 2);
-                                            cube.rotateFace("Front", 0, 0);
-                                            cube.rotateFace("Left", 2, 3);
                                         } else {
-                                            cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Front", 2, 2);
-                                            cube.rotateFace("Front", 0, 0);
-                                            cube.rotateFace("Front", 2, 3);
-                                            cube.rotateFace("Front", 0, 0);
-                                            cube.rotateFace("Left", 2, 3);
-                                            cube.rotateFace("Front", 0, 1);
-                                            cube.rotateFace("Left", 2, 2);
+                                            if (pair.getValue() == 2) nextColor = colorSide;
+                                            else nextColor = color;
                                         }
-                                        while (step != 0) {
-                                            cube.rotateCube(1);
-                                            step--;
-                                        }
-                                        foundAll.add(new Pair<>(color, colorSide));
-                                        if (pair.getValue() == 2) cube.rotateCube(0);
+                                        break;
+                                    }
+                                    case 1: {
+                                        if (value == 1) nextColor = color;
+                                        else nextColor = colorSide;
                                     }
                                 }
+                                if (flag) {
+                                    int step = 0;
+                                    while (cube.getValue()[cube.getFaces().get("Front")][1][1] != nextColor) {
+                                        cube.rotateCube(0);
+                                        cube.rotateFace("Front", 0, 1);
+                                        step++;
+                                    }
+                                    if (cube.getValue()[cube.getFaces().get("Up")][2][1] ==
+                                            cube.getColors()[cube.getFaces().get("Left")]) {
+                                        cube.rotateFace("Front", 0, 0);
+                                        cube.rotateFace("Front", 0, 2);
+                                        cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Front", 0, 3);
+                                        cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Left", 2, 2);
+                                        cube.rotateFace("Front", 0, 0);
+                                        cube.rotateFace("Left", 2, 3);
+                                    } else {
+                                        cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Front", 2, 2);
+                                        cube.rotateFace("Front", 0, 0);
+                                        cube.rotateFace("Front", 2, 3);
+                                        cube.rotateFace("Front", 0, 0);
+                                        cube.rotateFace("Left", 2, 3);
+                                        cube.rotateFace("Front", 0, 1);
+                                        cube.rotateFace("Left", 2, 2);
+                                    }
+                                    while (step != 0) {
+                                        cube.rotateCube(1);
+                                        step--;
+                                    }
+                                    foundAll.add(new Pair<>(color, colorSide));
+                                    if (pair.getValue() == 2) cube.rotateCube(0);
+                                }
+
                             }
                         }
                     }
@@ -542,14 +538,11 @@ public class Solver {
     private void thirdLayer() {
         List foundAll = new ArrayList();
         for (char color : sides) { //сколько изначально кубиков стоят правильно
-            Map<Pair<Integer, Integer>, Integer> found = cube.haveMiddleCube("Up", 'G', color);
-            if (!found.isEmpty()) {
-                for (Pair pair : found.keySet()) {
-                    if (found.get(pair) == 1) {
-                        foundAll.add(new Pair<>('G', color));
-                    }
+            Pair<Pair<Integer, Integer>, Integer> found = cube.haveMiddleCube("Up", 'G', color);
+                if (found.getValue() == 1) {
+                    foundAll.add(new Pair<>('G', color));
                 }
-            }
+
         }
         switch (foundAll.size()) { // разворот оставшихся
             case 2: {
@@ -589,11 +582,10 @@ public class Solver {
             cube.rotateFace("Front", 0, 0);
         }
         int num = 1;
-        for (int i = 1; i < 4; i++) { // сколько углов изначально стоят правильно
-            Map<Pair<Integer, Integer>, Integer> found = cube.haveMiddleCube(faces[i], sides[i], 'G');
-            for (Pair pair : found.keySet()) {
-                if (found.get(pair) == 1) num++;
-            }
+        for (int i = 1; i < 4; i++) { // сколько двухцветных кубиков изначально стоят правильно
+            Pair<Pair<Integer, Integer>, Integer> found = cube.haveMiddleCube(faces[i], sides[i], 'G');
+            if (found.getValue() == 1) num++;
+
         }
         switch (num) { // постановка оставшихся на свои места
             case 1: {
@@ -671,12 +663,13 @@ public class Solver {
         List foundAll = new ArrayList();
         for (char color : cornersFront) { //постановка углов на свои места
             if (!foundAll.contains(new Pair(color, 'O'))) {
-                Map<Pair<Integer, Integer>, Pair<Integer, Integer>> foundFront = cube.haveCorner("Front",
+                Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> foundFront = cube.haveCorner("Front",
                         color, 'O', 'G');
-                Map<Pair<Integer, Integer>, Pair<Integer, Integer>> foundBack = cube.haveCorner("Back",
+                Pair<Pair<Integer, Integer>, Pair<Integer, Integer>> foundBack = cube.haveCorner("Back",
                         color, 'O', 'G');
-                for (Pair pair : foundFront.keySet()) {
-                    if (!pair.equals(new Pair(0, 2))) {
+                int isEmpty = foundFront.getKey().getKey();
+                if (isEmpty != -1) {
+                    if (!foundFront.getKey().equals(new Pair(0, 2))) {
                         cube.rotateCube(0);
                         turnCornersUp(2);
                         cube.rotateCube(1);
@@ -685,8 +678,9 @@ public class Solver {
                         foundAll.add(new Pair<>(color, 'O'));
                     }
                 }
-                for (Pair pair : foundBack.keySet()) {
-                    if (pair.equals(new Pair(0, 0))) {
+                isEmpty = foundBack.getKey().getKey();
+                if (isEmpty != -1) {
+                    if (foundBack.getKey().equals(new Pair(0, 0))) {
                         turnCornersUp(1);
                         foundAll.add(new Pair<>(color, 'O'));
                     } else {
@@ -720,7 +714,7 @@ public class Solver {
     /**
      * @param way = 1 (перестановка углов по часовой)
      *            иначе против часовой
-     * углы меняются из положений (0,0),(0,2),(2,2) на стороне Up (перед пользователем сторона Front)
+     *            углы меняются из положений (0,0),(0,2),(2,2) на стороне Up (перед пользователем сторона Front)
      */
     private void turnCornersUp(int way) {
         if (way == 1) {

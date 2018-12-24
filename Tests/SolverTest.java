@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class SolverTest {
 
     @Test
-    void firstLayer() {
+    void decision() {
         Cube cube = new Cube(3);
         cube.confuse();
         cube.confuse();

@@ -1,9 +1,6 @@
 import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -20,24 +17,24 @@ class CubeTest {
     void scanTest() {
         assertEquals("              G G G \n              G G G \n              G G G \n" +
                 "Y Y Y  R R R  W W W  O O O  \nY Y Y  R R R  W W W  O O O  \nY Y Y  R R R  W W W  O O O  \n" +
-                "              B B B \n              B B B \n              B B B \n" ,c.scan());
+                "              B B B \n              B B B \n              B B B \n", c.scan());
     }
 
     @Test
     void createCubeTest() {
-        char[][][] value = new char[][][] { { { 'W', 'W', 'W' }, { 'R', 'R', 'R' }, { 'W', 'W', 'W' } },
-                                            { { 'Y', 'Y', 'Y' }, { 'O', 'O', 'O' }, { 'Y', 'Y', 'Y' } },
-                                            { { 'R', 'R', 'R' }, { 'Y', 'Y', 'Y' }, { 'R', 'R', 'R' } },
-                                            { { 'O', 'O', 'O' }, { 'W', 'W', 'W' }, { 'O', 'O', 'O' } },
-                                            { { 'B', 'B', 'B' }, { 'B', 'B', 'B' }, { 'B', 'B', 'B' } },
-                                            { { 'G', 'G', 'G' }, { 'G', 'G', 'G' }, { 'G', 'G', 'G' } } };
+        char[][][] value = new char[][][]{{{'W', 'W', 'W'}, {'R', 'R', 'R'}, {'W', 'W', 'W'}},
+                {{'Y', 'Y', 'Y'}, {'O', 'O', 'O'}, {'Y', 'Y', 'Y'}},
+                {{'R', 'R', 'R'}, {'Y', 'Y', 'Y'}, {'R', 'R', 'R'}},
+                {{'O', 'O', 'O'}, {'W', 'W', 'W'}, {'O', 'O', 'O'}},
+                {{'B', 'B', 'B'}, {'B', 'B', 'B'}, {'B', 'B', 'B'}},
+                {{'G', 'G', 'G'}, {'G', 'G', 'G'}, {'G', 'G', 'G'}}};
 
-        char[][][] value1 = new char[][][] { { { 'W', 'W', 'W' }, { 'W', 'W', 'O' }, { 'W', 'W', 'W' } },
-                { { 'Y', 'Y', 'Y' }, { 'Y', 'Y', 'Y' }, { 'Y', 'Y', 'Y' } },
-                { { 'R', 'R', 'R' }, { 'R', 'R', 'R' }, { 'R', 'R', 'R' } },
-                { { 'O', 'O', 'O' }, { 'W', 'O', 'O' }, { 'O', 'O', 'O' } },
-                { { 'B', 'B', 'B' }, { 'B', 'B', 'B' }, { 'B', 'B', 'B' } },
-                { { 'G', 'G', 'G' }, { 'G', 'G', 'G' }, { 'G', 'G', 'G' } } };
+        char[][][] value1 = new char[][][]{{{'W', 'W', 'W'}, {'W', 'W', 'O'}, {'W', 'W', 'W'}},
+                {{'Y', 'Y', 'Y'}, {'Y', 'Y', 'Y'}, {'Y', 'Y', 'Y'}},
+                {{'R', 'R', 'R'}, {'R', 'R', 'R'}, {'R', 'R', 'R'}},
+                {{'O', 'O', 'O'}, {'W', 'O', 'O'}, {'O', 'O', 'O'}},
+                {{'B', 'B', 'B'}, {'B', 'B', 'B'}, {'B', 'B', 'B'}},
+                {{'G', 'G', 'G'}, {'G', 'G', 'G'}, {'G', 'G', 'G'}}};
         Cube c1 = new Cube(3);
         c1.createCube(value);
         assertEquals("WWWRRRWWW YYYOOOYYY RRRYYYRRR OOOWWWOOO BBBBBBBBB GGGGGGGGG", c1.toString());
@@ -83,7 +80,7 @@ class CubeTest {
             c.rotateFace("Front", 1, 1);
         }
         for (int i = 0; i < 4; i++) {
-            c.rotateFace("Right", c.size-1, 2);
+            c.rotateFace("Right", c.size - 1, 2);
         }
         assertEquals("WWWWWWWWW YYYYYYYYY RRRRRRRRR OOOOOOOOO BBBBBBBBB GGGGGGGGG", c.toString());
     }
@@ -103,56 +100,52 @@ class CubeTest {
 
     @Test
     void haveMiddleCube() {
-        Map<Pair<Integer,Integer>,Integer> ans = new HashMap<>();
-        ans.put(new Pair<>(1,2), 1);
-        assertEquals(ans, c.haveMiddleCube("Up",'G','O'));
-        ans.remove(new Pair<>(1,2));
-        ans.put(new Pair<>(0,1), 1);
-        assertEquals(ans, c.haveMiddleCube("Front",'W','G'));
-        ans.remove(new Pair<>(0,1));
-        ans.put(new Pair<>(1,2), 2);
-        assertEquals(ans, c.haveMiddleCube("Front",'O','W'));
-        ans.remove(new Pair<>(1,2));
-        assertEquals(ans, c.haveMiddleCube("Down",'B','G'));
-        ans.put(new Pair<>(1,2), 2);
-        assertEquals(ans, c.haveMiddleCube("Back",'R','Y'));
+        assertEquals(new Pair(new Pair<>(1, 2), 1),
+                c.haveMiddleCube("Up", 'G', 'O'));
+        assertEquals(new Pair<>(new Pair<>(0, 1), 1),
+                c.haveMiddleCube("Front", 'W', 'G'));
+        assertEquals(new Pair<>(new Pair<>(1, 2), 2),
+                c.haveMiddleCube("Front", 'O', 'W'));
+        assertEquals(new Pair(new Pair<>(-1, -1), -1),
+                c.haveMiddleCube("Down", 'B', 'G'));
+        assertEquals(new Pair<>(new Pair<>(1, 2), 2),
+                c.haveMiddleCube("Back", 'R', 'Y'));
         c.rotateCube(0);
-        ans.remove(new Pair<>(1,2));
-        ans.put(new Pair<>(1,0),1);
-        assertEquals(ans,c.haveMiddleCube("Front",'R','Y'));
-        ans.remove(new Pair<>(1,0));
-        c.rotateFace("Front",2, 0);
-        ans.put(new Pair<>(2,1),1);
-        assertEquals(ans,c.haveMiddleCube("Down",'B','W'));
-        ans.remove(new Pair<>(2,1));
-        assertEquals(ans, c.haveMiddleCube("Front",'W','Y'));
-        assertEquals(ans, c.haveMiddleCube("Down",'O','R'));
-        assertEquals(ans, c.haveMiddleCube("Right", 'G','B'));
+        assertEquals(new Pair<>(new Pair<>(1, 0), 1),
+                c.haveMiddleCube("Front", 'R', 'Y'));
+        c.rotateFace("Front", 2, 0);
+        assertEquals(new Pair<>(new Pair<>(2, 1), 1),
+                c.haveMiddleCube("Down", 'B', 'W'));
+        assertEquals(new Pair(new Pair<>(-1, -1), -1),
+                c.haveMiddleCube("Front", 'W', 'Y'));
+        assertEquals(new Pair(new Pair<>(-1, -1), -1),
+                c.haveMiddleCube("Down", 'O', 'R'));
+        assertEquals(new Pair(new Pair<>(-1, -1), -1),
+                c.haveMiddleCube("Right", 'G', 'B'));
         c.rotateCube(1);
-        ans.put(new Pair<>(0,1), 1);
-        assertEquals(ans, c.haveMiddleCube("Right", 'O','G'));
+        assertEquals(new Pair<>(new Pair<>(0, 1), 1),
+                c.haveMiddleCube("Right", 'O', 'G'));
     }
 
 
     @Test
     void haveCorner() {
-        Map<Pair<Integer,Integer>,Pair<Integer,Integer>> ans = new HashMap<>();
-        ans.put(new Pair<>(0,0),new Pair<>(1,3));
-        assertEquals(ans,c.haveCorner("Front",'W','G','R'));
-        ans.remove(new Pair<>(0,0));
-        ans.put(new Pair<>(0,2), new Pair<>(2,3));
-        assertEquals(ans, c.haveCorner("Back",'G','Y','R'));
-        ans.remove(new Pair<>(0,2));
-        ans.put(new Pair<>(2,0), new Pair<>(3,2));
-        assertEquals(ans,c.haveCorner("Front",'B','R','W'));
-        ans.remove(new Pair<>(2,0));
-        ans.put(new Pair<>(2,2),new Pair<>(1,3));
-        assertEquals(ans, c.haveCorner("Front",'W','B','O'));
-        ans.remove(new Pair<>(2,2));
-        assertEquals(ans, c.haveCorner("Back",'j','d','v'));
-        assertEquals(ans,c.haveCorner("Back",'G','W','O'));
-        assertEquals(ans, c.haveCorner("Front",'B','O','R'));
-        assertEquals(ans, c.haveCorner("Front",'W','W','W'  ));
+        assertEquals(new Pair<>(new Pair<>(0, 0), new Pair<>(1, 3)),
+                c.haveCorner("Front", 'W', 'G', 'R'));
+        assertEquals(new Pair<>(new Pair<>(0, 2), new Pair<>(2, 3)),
+                c.haveCorner("Back", 'G', 'Y', 'R'));
+        assertEquals(new Pair<>(new Pair<>(2, 0), new Pair<>(3, 2)),
+                c.haveCorner("Front", 'B', 'R', 'W'));
+        assertEquals(new Pair<>(new Pair<>(2, 2), new Pair<>(1, 3)),
+                c.haveCorner("Front", 'W', 'B', 'O'));
+        assertEquals(new Pair<>(new Pair<>(-1, -1), new Pair<>(-1, -1)),
+                c.haveCorner("Back", 'j', 'd', 'v'));
+        assertEquals(new Pair<>(new Pair<>(-1, -1), new Pair<>(-1, -1)),
+                c.haveCorner("Back", 'G', 'W', 'O'));
+        assertEquals(new Pair<>(new Pair<>(-1, -1), new Pair<>(-1, -1)),
+                c.haveCorner("Front", 'B', 'O', 'R'));
+        assertEquals(new Pair<>(new Pair<>(-1, -1), new Pair<>(-1, -1)),
+                c.haveCorner("Front", 'W', 'W', 'W'));
     }
 
 
