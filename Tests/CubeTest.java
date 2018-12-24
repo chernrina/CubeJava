@@ -1,4 +1,8 @@
+import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -8,7 +12,8 @@ class CubeTest {
 
     @Test
     void toStringTest() {
-        assertEquals("WWWWWWWWWYYYYYYYYYRRRRRRRRROOOOOOOOOBBBBBBBBBGGGGGGGGG", c.toString());
+        assertEquals("WWWWWWWWW YYYYYYYYY RRRRRRRRR OOOOOOOOO BBBBBBBBB GGGGGGGGG",
+                c.toString());
     }
 
     @Test
@@ -26,33 +31,42 @@ class CubeTest {
                                             { { 'O', 'O', 'O' }, { 'W', 'W', 'W' }, { 'O', 'O', 'O' } },
                                             { { 'B', 'B', 'B' }, { 'B', 'B', 'B' }, { 'B', 'B', 'B' } },
                                             { { 'G', 'G', 'G' }, { 'G', 'G', 'G' }, { 'G', 'G', 'G' } } };
+
+        char[][][] value1 = new char[][][] { { { 'W', 'W', 'W' }, { 'W', 'W', 'O' }, { 'W', 'W', 'W' } },
+                { { 'Y', 'Y', 'Y' }, { 'Y', 'Y', 'Y' }, { 'Y', 'Y', 'Y' } },
+                { { 'R', 'R', 'R' }, { 'R', 'R', 'R' }, { 'R', 'R', 'R' } },
+                { { 'O', 'O', 'O' }, { 'W', 'O', 'O' }, { 'O', 'O', 'O' } },
+                { { 'B', 'B', 'B' }, { 'B', 'B', 'B' }, { 'B', 'B', 'B' } },
+                { { 'G', 'G', 'G' }, { 'G', 'G', 'G' }, { 'G', 'G', 'G' } } };
         Cube c1 = new Cube(3);
         c1.createCube(value);
-        assertEquals("WWWRRRWWWYYYOOOYYYRRRYYYRRROOOWWWOOOBBBBBBBBBGGGGGGGGG", c1.toString());
+        assertEquals("WWWRRRWWW YYYOOOYYY RRRYYYRRR OOOWWWOOO BBBBBBBBB GGGGGGGGG", c1.toString());
     }
 
     @Test
     void rotateCubeAndFaceTest() {
+
         c.rotateFace("Front", 2, 2);
-        assertEquals("WWBWWBWWBGYYGYYGYYRRRRRRRRROOOOOOOOOBBYBBYBBYGGWGGWGGW", c.toString());
+        assertEquals("WWBWWBWWB GYYGYYGYY RRRRRRRRR OOOOOOOOO BBYBBYBBY GGWGGWGGW", c.toString());
 
         c.rotateFace("Left", 0, 0);
-        assertEquals("RRRWWBWWBOOOGYYGYYGYYRRRRRRWWBOOOOOOBBYBBYBBYWWWGGGGGG", c.toString());
+        assertEquals("RRRWWBWWB OOOGYYGYY GYYRRRRRR WWBOOOOOO BBYBBYBBY WWWGGGGGG", c.toString());
 
         c.rotateFace("Up", 1, 0);
-        assertEquals("RRRWWBWWBOOOGYYGYYGBYRBRRYRWGBOGOOGOBBYOOWBBYWWWRRYGGG", c.toString());
+        assertEquals("RRRWWBWWB OOOGYYGYY GBYRBRRYR WGBOGOOGO BBYOOWBBY WWWRRYGGG", c.toString());
 
         assertThrows(IllegalArgumentException.class, () -> c.rotateFace("Facade", 3, 2));
         assertThrows(IllegalArgumentException.class, () -> c.rotateFace("Left", c.size, 2));
         assertThrows(IllegalArgumentException.class, () -> c.rotateFace("Left", 3, 6));
 
         c.rotateCube(2);
-        assertEquals("BBYOOWBBYGGGYRRWWWYRRBBYGRROOWGGGOOBYYGYYGOOORRRWWBWWB", c.toString());
+        assertEquals("BBYOOWBBY GGGYRRWWW YRRBBYGRR OOWGGGOOB YYGYYGOOO RRRWWBWWB", c.toString());
 
         c.rotateCube(4);
-        assertEquals("YWYBOBBOBWYGWRGWRGRBBRWWRWWGGOYYOYYORYRRBRYBGWGBOGOOGO", c.toString());
+        assertEquals("YWYBOBBOB WYGWRGWRG RBBRWWRWW GGOYYOYYO RYRRBRYBG WGBOGOOGO", c.toString());
 
         assertThrows(IllegalArgumentException.class, () -> c.rotateCube(6));
+
     }
 
     @Test
@@ -71,7 +85,7 @@ class CubeTest {
         for (int i = 0; i < 4; i++) {
             c.rotateFace("Right", c.size-1, 2);
         }
-        assertEquals("WWWWWWWWWYYYYYYYYYRRRRRRRRROOOOOOOOOBBBBBBBBBGGGGGGGGG", c.toString());
+        assertEquals("WWWWWWWWW YYYYYYYYY RRRRRRRRR OOOOOOOOO BBBBBBBBB GGGGGGGGG", c.toString());
     }
 
     @Test
@@ -86,6 +100,61 @@ class CubeTest {
         assertEquals(true, s.split("B").length == size);
         assertEquals(true, s.split("G").length == size);
     }
+
+    @Test
+    void haveMiddleCube() {
+        Map<Pair<Integer,Integer>,Integer> ans = new HashMap<>();
+        ans.put(new Pair<>(1,2), 1);
+        assertEquals(ans, c.haveMiddleCube("Up",'G','O'));
+        ans.remove(new Pair<>(1,2));
+        ans.put(new Pair<>(0,1), 1);
+        assertEquals(ans, c.haveMiddleCube("Front",'W','G'));
+        ans.remove(new Pair<>(0,1));
+        ans.put(new Pair<>(1,2), 2);
+        assertEquals(ans, c.haveMiddleCube("Front",'O','W'));
+        ans.remove(new Pair<>(1,2));
+        assertEquals(ans, c.haveMiddleCube("Down",'B','G'));
+        ans.put(new Pair<>(1,2), 2);
+        assertEquals(ans, c.haveMiddleCube("Back",'R','Y'));
+        c.rotateCube(0);
+        ans.remove(new Pair<>(1,2));
+        ans.put(new Pair<>(1,0),1);
+        assertEquals(ans,c.haveMiddleCube("Front",'R','Y'));
+        ans.remove(new Pair<>(1,0));
+        c.rotateFace("Front",2, 0);
+        ans.put(new Pair<>(2,1),1);
+        assertEquals(ans,c.haveMiddleCube("Down",'B','W'));
+        ans.remove(new Pair<>(2,1));
+        assertEquals(ans, c.haveMiddleCube("Front",'W','Y'));
+        assertEquals(ans, c.haveMiddleCube("Down",'O','R'));
+        assertEquals(ans, c.haveMiddleCube("Right", 'G','B'));
+        c.rotateCube(1);
+        ans.put(new Pair<>(0,1), 1);
+        assertEquals(ans, c.haveMiddleCube("Right", 'O','G'));
+    }
+
+
+    @Test
+    void haveCorner() {
+        Map<Pair<Integer,Integer>,Pair<Integer,Integer>> ans = new HashMap<>();
+        ans.put(new Pair<>(0,0),new Pair<>(1,3));
+        assertEquals(ans,c.haveCorner("Front",'W','G','R'));
+        ans.remove(new Pair<>(0,0));
+        ans.put(new Pair<>(0,2), new Pair<>(2,3));
+        assertEquals(ans, c.haveCorner("Back",'G','Y','R'));
+        ans.remove(new Pair<>(0,2));
+        ans.put(new Pair<>(2,0), new Pair<>(3,2));
+        assertEquals(ans,c.haveCorner("Front",'B','R','W'));
+        ans.remove(new Pair<>(2,0));
+        ans.put(new Pair<>(2,2),new Pair<>(1,3));
+        assertEquals(ans, c.haveCorner("Front",'W','B','O'));
+        ans.remove(new Pair<>(2,2));
+        assertEquals(ans, c.haveCorner("Back",'j','d','v'));
+        assertEquals(ans,c.haveCorner("Back",'G','W','O'));
+        assertEquals(ans, c.haveCorner("Front",'B','O','R'));
+        assertEquals(ans, c.haveCorner("Front",'W','W','W'  ));
+    }
+
 
     @Test
     void equalsTest() {

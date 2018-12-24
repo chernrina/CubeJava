@@ -1,3 +1,5 @@
+import javafx.util.Pair;
+
 import java.util.*;
 
 public class Cube {
@@ -13,6 +15,12 @@ public class Cube {
     private static final String[] facesName = {"Front", "Back", "Left", "Right", "Down", "Up"};
 
     private static Random random;
+
+    private int rotates = 0;
+
+    public int getRotates() {
+        return rotates;
+    }
 
     public Cube(int size) {
         this.size = size;
@@ -41,7 +49,7 @@ public class Cube {
             for (int j = 0; j < size; j++) {
                 for (int k = 0; k < size; k++) {
                     boolean charIsIncorrect = true;
-                    for (char c: colors) {
+                    for (char c : colors) {
                         if (c == value[i][j][k]) {
                             charIsIncorrect = false;
                             break;
@@ -54,7 +62,7 @@ public class Cube {
         }
         int num = size * size;
         if (map.get('W') != num || map.get('Y') != num || map.get('R') != num ||
-            map.get('O') != num || map.get('B') != num || map.get('G') != num) throw new IllegalArgumentException();
+                map.get('O') != num || map.get('B') != num || map.get('G') != num) throw new IllegalArgumentException();
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < size; j++) {
                 for (int k = 0; k < size; k++) {
@@ -70,22 +78,26 @@ public class Cube {
         char[][] rotate = new char[size][size];
         switch (direction) {
             case 0: {
-                for (int i = 0; i < size; i++) for (int j = 0; j < size; j++) {
-                    rotate[i][j] = value[faces.get(name)][j][size - 1 - i]; //против часовой
-                }
+                for (int i = 0; i < size; i++)
+                    for (int j = 0; j < size; j++) {
+                        rotate[i][j] = value[faces.get(name)][j][size - 1 - i]; //против часовой
+                    }
                 break;
             }
             case 1: {
-                for (int i = 0; i < size; i++) for (int j = 0; j < size; j++) {
-                    rotate[i][j] = value[faces.get(name)][size - 1 - j][i]; //по часовой
-                }
+                for (int i = 0; i < size; i++)
+                    for (int j = 0; j < size; j++) {
+                        rotate[i][j] = value[faces.get(name)][size - 1 - j][i]; //по часовой
+                    }
                 break;
             }
-            default: throw new IllegalArgumentException();
+            default:
+                throw new IllegalArgumentException();
         }
-        for (int i = 0; i < size; i++) for (int j = 0; j < size; j++) {
-            value[faces.get(name)][i][j] =rotate[i][j];
-        }
+        for (int i = 0; i < size; i++)
+            for (int j = 0; j < size; j++) {
+                value[faces.get(name)][i][j] = rotate[i][j];
+            }
     }
 
     public void rotateCube(int direction) { //Поворачивает кубик. У пользователь перед глазами всегда фасад
@@ -125,7 +137,8 @@ public class Cube {
                 for (int i = 0; i < 4; i++) this.turn(names[i], 1);
                 break;
             }
-            default: throw new IllegalArgumentException();
+            default:
+                throw new IllegalArgumentException();
         }
         //Переименовка 4 граней
         int temp = faces.get(names[3]);
@@ -137,6 +150,7 @@ public class Cube {
     }
 
     public void rotateFace(String face, int number, int direction) { //Поворачивает грань
+        rotates++;
         //face - имя грани
         //number - номер промежуточной грани от 0 по size - 1
         //direction(0 - вправо, 1 - влево, 2 - вверх, 3 - вниз)
@@ -177,7 +191,8 @@ public class Cube {
                 recover = 2;
                 break;
             }
-            default: recover = -1;
+            default:
+                recover = -1;
         }
         String[] names;
         switch (direction) {
@@ -197,7 +212,8 @@ public class Cube {
                 names = new String[]{"Front", "Down", "Back", "Up"};
                 break;
             }
-            default: names = new String[0];
+            default:
+                names = new String[0];
         }
         char[] temp = new char[size];
         if (direction == 0 || direction == 1) {
@@ -226,7 +242,7 @@ public class Cube {
             for (int i = 0; i < size; i++) {
                 value[faces.get(names[0])][i][number] = temp[i];
             }
-            if (number == 0) this.turn("Left", (1 + direction) % 2);
+            if (number == 0) this.turn("Left", (0 + direction) % 2);
             if (number == size - 1) this.turn("Right", (1 + direction) % 2);
         }
         if (recover != -1) this.rotateCube(recover % 6);
@@ -235,12 +251,346 @@ public class Cube {
 
     public void confuse() { //Случайным образом "перемешивает" кубик
         for (int i = 0; i < 30 * size; i++) {
-            this.rotateFace(facesName[random.nextInt(3)], random.nextInt(size), random.nextInt(2));
+            this.rotateFace(facesName[random.nextInt(5)], 0, random.nextInt(2));
         }
     }
 
+    /**
+     * @param face    имя грани, на которой ищем кубик (2 цвета)
+     * @param oneSide цвет с одной стороны
+     * @param twoSide цвет с другой стороны
+     * @return пара: ключ - пара (номер строки, номер столбца) - координаты кубика на face,
+     * значение = 1 - если цвет oneSide на стороне face, 2 - если на стороне face цвет twoSide
+     */
+    public Map<Pair<Integer, Integer>, Integer> haveMiddleCube(String face, char oneSide, char twoSide) {
+        Map<Pair<Integer, Integer>, Integer> ans = new HashMap<>();
+        if (oneSide == twoSide) return ans;
+        switch (oneSide) {
+            case 'W':
+                if (twoSide == 'Y') return ans;
+                break;
+            case 'Y':
+                if (twoSide == 'W') return ans;
+                break;
+            case 'R':
+                if (twoSide == 'O') return ans;
+                break;
+            case 'O':
+                if (twoSide == 'R') return ans;
+                break;
+            case 'B':
+                if (twoSide == 'G') return ans;
+                break;
+            case 'G':
+                if (twoSide == 'B') return ans;
+        }
+        int indexOfFace = faces.get(face);
+        String nextFace = "";
+        int i = 0;
+        int row = 0;
+        int column = 0;
+        while (i != 4) { // 4 положения двухцветных кубиков
+            i++;
+            switch (i) {
+                case 1: {
+                    row = 0;
+                    column = 1;
+                    break;
+                }
+                case 2: {
+                    row = 1;
+                    column = 0;
+                    break;
+                }
+                case 3: {
+                    row = 1;
+                    column = 2;
+                    break;
+                }
+                case 4: {
+                    row = 2;
+                    column = 1;
+                }
+            }
+            int ansI = row;
+            int ansJ = column;
+            int compare;
+            if (value[indexOfFace][ansI][ansJ] == oneSide ||
+                    value[indexOfFace][ansI][ansJ] == twoSide) {
+                if (value[indexOfFace][ansI][ansJ] == oneSide) compare = 1;
+                else compare = 2;
+                switch (face) {
+                    case "Right": {
+                        if (ansJ == 2) {
+                            nextFace = "Back";
+                            ansI = 0;
+                            ansJ = 1;
+                        } else {
+                            switch (ansI) {
+                                case 0: {
+                                    nextFace = "Up";
+                                    break;
+                                }
+                                case 2: {
+                                    nextFace = "Down";
+                                    break;
+                                }
+                                default:
+                                    nextFace = "Front";
+                            }
+                            ansI = 1;
+                            ansJ = 2;
+                        }
+                        break;
+                    }
+                    case "Left": {
+                        if (ansJ == 0) {
+                            nextFace = "Back";
+                            ansI = 1;
+                            ansJ = 2;
+                        } else {
+                            switch (ansI) {
+                                case 0: {
+                                    nextFace = "Up";
+                                    break;
+                                }
+                                case 2: {
+                                    nextFace = "Down";
+                                    break;
+                                }
+                                default:
+                                    nextFace = "Front";
+                            }
+                            ansI = 1;
+                            ansJ = 0;
+                        }
+                        break;
+                    }
+                    case "Front": {
+                        switch (ansI) {
+                            case 0: {
+                                ansI += 2;
+                                nextFace = "Up";
+                                break;
+                            }
+                            case 2: {
+                                ansI -= 2;
+                                nextFace = "Down";
+                            }
+                        }
+                        switch (ansJ) {
+                            case 0: {
+                                ansJ += 2;
+                                nextFace = "Left";
+                                break;
+                            }
+                            case 2: {
+                                ansJ -= 2;
+                                nextFace = "Right";
+                            }
+                        }
+                        break;
+                    }
+                    case "Back": {
+                        switch (ansJ) {
+                            case 0: {
+                                ansJ += 2;
+                                nextFace = "Right";
+                                break;
+                            }
+                            case 2: {
+                                ansJ -= 2;
+                                nextFace = "Left";
+                            }
+                        }
+                        if (ansI == 0) nextFace = "Up";
+                        if (ansI == 2) nextFace = "Down";
+                        break;
+                    }
+                    case "Up": {
+                        if (ansJ == 0) nextFace = "Left";
+                        if (ansJ == 2) nextFace = "Right";
+                        if (ansI == 2) nextFace = "Front";
+                        if (ansI == 0) nextFace = "Back";
+                        ansI = 0;
+                        ansJ = 1;
+                        break;
+                    }
+                    case "Down": {
+                        switch (ansI) {
+                            case 0: {
+                                nextFace = "Front";
+                                break;
+                            }
+                            case 2:
+                                nextFace = "Back";
+                        }
+                        if (ansJ == 0) nextFace = "Left";
+                        if (ansJ == 2) nextFace = "Right";
+                        ansI = 2;
+                        ansJ = 1;
+                    }
+                }
+                if ((compare == 1 && value[faces.get(nextFace)][ansI][ansJ] == twoSide) ||
+                        (compare == 2 && value[faces.get(nextFace)][ansI][ansJ] == oneSide)) {
+                    ans.put(new Pair<>(row, column), compare);
+                    return ans;
+                }
+            }
+        }
+        return ans;
+    }
+
+
+    /**
+     * @param face      имя грани
+     * @param oneSide   первый цвет
+     * @param twoSide   второй цвет
+     * @param threeSide третий цвет
+     * @return пару: ключ -  пара(строка; столбец)-координаты найденного кубика,
+     * значение - пара(1-на стороне front первый цвет ; 1-справа(столбец = 2) или слева(столбец = 0) первый цвет
+     *                 2-на стороне front второй цвет   2- =|= второй цвет
+     *                 3-на стороне front третий цвет   3- =|= третий цвет
+     */
+    public Map<Pair<Integer, Integer>, Pair<Integer, Integer>>
+    haveCorner(String face, char oneSide, char twoSide, char threeSide) {
+        Map<Pair<Integer, Integer>, Pair<Integer, Integer>> ans = new HashMap<>();
+        int indexOfFace = faces.get(face);
+        String nextFace = "";
+        int i = 0;
+        while (i != 4) {
+            int row = 0;
+            int column = 0;
+            i++;
+            switch (i) {
+                case 2: {
+                    column = 2;
+                    break;
+                }
+                case 3: {
+                    row = 2;
+                    break;
+                }
+                case 4: {
+                    row = 2;
+                    column = 2;
+                }
+            }
+            int ansI = row;
+            int ansJ = column;
+            int compare = 0;
+            if (value[indexOfFace][ansI][ansJ] == oneSide) compare = 1;
+            if (value[indexOfFace][ansI][ansJ] == twoSide) compare = 2;
+            if (value[indexOfFace][ansI][ansJ] == threeSide) compare = 3;
+            if (compare != 0) {
+                switch (face) {
+                    case "Front": {
+                        switch (ansI) {
+                            case 0: {
+                                ansI = 2;
+                                nextFace = "Up";
+                                break;
+                            }
+                            case 2: {
+                                ansI = 0;
+                                nextFace = "Down";
+                            }
+                        }
+                        break;
+                    }
+                    case "Back": {
+                        if (ansI == 0) nextFace = "Up";
+                        else nextFace = "Down";
+                        switch (ansJ) {
+                            case 0: {
+                                ansJ = 2;
+                                break;
+                            }
+                            case 2:
+                                ansJ = 0;
+                        }
+                    }
+                    default:
+                        break;
+                }
+                int newCompare = 0;
+                if (compare == 1) {
+                    if (value[faces.get(nextFace)][ansI][ansJ] == twoSide) newCompare = 3;
+                    if (value[faces.get(nextFace)][ansI][ansJ] == threeSide) newCompare = 2;
+                } else if (compare == 2) {
+                    if (value[faces.get(nextFace)][ansI][ansJ] == oneSide) newCompare = 3;
+                    if (value[faces.get(nextFace)][ansI][ansJ] == threeSide) newCompare = 1;
+                } else {
+                    if (value[faces.get(nextFace)][ansI][ansJ] == oneSide) newCompare = 2;
+                    if (value[faces.get(nextFace)][ansI][ansJ] == twoSide) newCompare = 1;
+                }
+                if (newCompare != 0) {
+                    String finalFace = "";
+                    if (ansJ == 0) finalFace = "Left";
+                    else finalFace = "Right";
+                    switch (nextFace) {
+                        case "Up": {
+                            if (ansI == 2) {
+                                if (ansJ == 0) ansJ = 2;
+                                else ansJ = 0;
+                                ansI = 0;
+                            }
+                            break;
+                        }
+                        case "Down": {
+                            if (ansI == 0) {
+                                if (ansJ == 0) ansJ = 2;
+                                else ansJ = 0;
+                                ansI = 2;
+                            }
+                        }
+                        default:
+                            break;
+                    }
+                    boolean found = false;
+                    switch (newCompare) {
+                        case 1: {
+                            if (value[faces.get(finalFace)][ansI][ansJ] == oneSide) found = true;
+                            break;
+                        }
+                        case 2: {
+                            if (value[faces.get(finalFace)][ansI][ansJ] == twoSide) found = true;
+                            break;
+                        }
+                        case 3: {
+                            if (value[faces.get(finalFace)][ansI][ansJ] == threeSide) found = true;
+                        }
+                    }
+                    if (found) {
+                        ans.put(new Pair<>(row, column), new Pair<>(compare, newCompare));
+                        return ans;
+                    }
+                }
+
+            }
+        }
+        return ans;
+    }
+
+
     public char[][] getFace(String name) {
         return value[faces.get(name)];
+    }
+
+    public char[] getColors() {
+        return colors;
+    }
+
+    public Map<String, Integer> getFaces() {
+        return faces;
+    }
+
+    public String[] getFacesName() {
+        return facesName;
+    }
+
+    public char[][][] getValue() {
+        return value;
     }
 
     public String scan() { //развёртка кубика
@@ -274,6 +624,7 @@ public class Cube {
                 for (int j = 0; j < size; j++)
                     result.append(value[faces.get(facesName[k])][i][j]);
             }
+            if (k / 5 != 1) result.append(" ");
         }
         return result.toString();
     }
